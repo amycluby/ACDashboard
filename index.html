@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Auntie Connie's Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<script>
+/* =====================================================================
+   SETTINGS: the only part of this file you should need to change.
+   ===================================================================== */
+const SETTINGS = {
+  // One working Hulu link per TV channel. To get one: on hulu.com, open the
+  // channel's network page and copy the address (for example
+  // https://www.hulu.com/network/...). Leave "" for channels you haven't
+  // found yet; the button will then open Hulu and say which channel to pick.
+  huluLinks: {
+    "BTN":   "",
+    "FOX":   "",
+    "FS1":   "",
+    "CBS":   "",
+    "NBC":   "",
+    "ABC":   "",
+    "ESPN":  "",
+    "ESPN2": "",
+    "ESPNU": "",
+    "TNT":   "",
+    "TBS":   "",
+    "truTV": "",
+    "CBSSN": "",
+  },
+  // Used when a game's channel has no link above.
+  huluFallback: "https://www.hulu.com/",
+
+  // Church service. Leave link "" to hide the church button.
+  church: {
+    name: "Sunday church service",
+    link: "",                 // e.g. https://www.facebook.com/YourChurch/live
+    day: 0,                   // 0 = Sunday
+    start: "10:30",           // 24-hour clock, iPad's own time zone
+    showMinutesBefore: 20,
+    showMinutesAfter: 120,
+  },
+
+  // Show a game's button this many minutes before it starts.
+  showMinutesBefore: 20,
+};
+
+/* IU on ESPN's public schedule feed (team id 84 = Indiana Hoosiers). */
+const SPORTS = [
+  { label: "Football",            path: "football/college-football",           types: [2, 3] },
+  { label: "Men's Basketball",    path: "basketball/mens-college-basketball",  types: [2, 3] },
+  { label: "Women's Basketball",  path: "basketball/womens-college-basketball",types: [2, 3] },
+];
+const TEAM_ID = 84;
+</script>
+<style>
+/* Layout: one column, one decision at a time. The screen is either "a game is on" (one giant button) or "next game" (a calm card). */
+:root {
+  --crimson: #990000;
+  --crimson-dark: #6e0000;
+  --paper: #ffffff;
+  --ink: #1a1414;
+  --muted: #5b4f4f;
+  --line: #e7dcdc;
+  --church: #1f4e79;
+  --font: "Atkinson Hyperlegible", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font);
+  font-size: clamp(22px, 2.6vw, 30px); line-height: 1.35;
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+  padding-block: max(20px, env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-bottom, 0px));
+  -webkit-text-size-adjust: 100%;
+}
+main { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; min-height: 100%; }
+header { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 4px solid var(--crimson); padding-bottom: 12px; }
+.clock { font-size: 1.6em; font-weight: 700; font-variant-numeric: tabular-nums; }
+.date { color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 24px; }
+
+.big {
+  display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: #fff;
+  background: var(--crimson); border-radius: 28px; padding: 40px 36px; min-height: 42vh; justify-content: center;
+  box-shadow: 0 10px 0 var(--crimson-dark); transition: transform .08s;
+}
+.big:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--crimson-dark); }
+.big:focus-visible { outline: 6px solid var(--ink); outline-offset: 6px; }
+.big .play { font-size: 2.6em; font-weight: 700; line-height: 1.05; text-wrap: balance; }
+.big .detail { font-size: 1.2em; }
+.big .hint { font-size: .95em; opacity: .9; }
+.big.church { background: var(--church); box-shadow: 0 10px 0 #12324f; min-height: 30vh; }
+
+.card { border: 3px solid var(--line); border-radius: 24px; padding: 28px 32px; display: flex; flex-direction: column; gap: 6px; }
+.card .label { text-transform: uppercase; letter-spacing: .08em; font-size: .8em; color: var(--crimson); font-weight: 700; }
+.card .when { font-size: 1.5em; font-weight: 700; }
+.card .what { font-size: 1.2em; }
+.card .note { color: var(--muted); }
+.small { color: var(--muted); font-size: .75em; }
+.later { display: flex; flex-direction: column; gap: 4px; }
+.later div { display: flex; gap: 16px; flex-wrap: wrap; }
+.later b { min-width: 9em; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .big { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="clock" id="clock"></div>
+    <div class="date" id="date"></div>
+  </header>
+  <section class="stack" id="now"></section>
+  <section class="stack" id="next">
+    <div class="card"><div class="label">Indiana Hoosiers</div><div class="what">Loading the game schedule…</div></div>
+  </section>
+  <p class="small" id="status"></p>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const MIN = 60 * 1000;
+let games = [];
+let loadedAt = null;
+let loadError = false;
+
+const fmtTime = (d) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+const fmtDay = (d) => {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const that = new Date(d); that.setHours(0, 0, 0, 0);
+  const diff = Math.round((that - today) / (24 * 60 * MIN));
+  if (diff === 0) return "Today";
+  if (diff === 1) return "Tomorrow";
+  return d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+};
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* Match ESPN's channel names to the keys in SETTINGS.huluLinks. */
+function channelKey(name) {
+  if (!name) return null;
+  const n = name.replace(/\s+/g, "").toUpperCase();
+  const alias = { "BIGTENNETWORK": "BTN", "FOXSPORTS1": "FS1", "CBSSPORTSNETWORK": "CBSSN", "CBSSPORTSNET": "CBSSN", "TRUTV": "truTV" };
+  if (alias[n]) return alias[n];
+  for (const k of Object.keys(SETTINGS.huluLinks)) if (k.toUpperCase() === n) return k;
+  return null;
+}
+
+function parseEvent(ev, sport) {
+  const c = (ev.competitions || [])[0] || {};
+  const comps = c.competitors || [];
+  const iu = comps.find((t) => String(t.id || t.team?.id) === String(TEAM_ID));
+  const opp = comps.find((t) => t !== iu);
+  const oppName = opp?.team?.shortDisplayName || opp?.team?.displayName || opp?.team?.location || "TBA";
+  const home = iu?.homeAway === "home";
+  const nets = (c.broadcasts || []).map((b) => b.media?.shortName || b.names?.[0]).filter(Boolean);
+  const onHulu = nets.map(channelKey).find(Boolean) || null;
+  const state = c.status?.type?.state || ev.status?.type?.state || "pre";
+  const timeTBD = c.timeValid === false || ev.timeValid === false;
+  return {
+    id: ev.id, sport, start: new Date(ev.date), state, timeTBD,
+    title: `IU ${sport.label}`, opp: oppName, home, nets, channel: onHulu,
+  };
+}
+
+async function loadSchedule() {
+  const reqs = [];
+  for (const s of SPORTS) for (const t of s.types) {
+    const url = `https://site.api.espn.com/apis/site/v2/sports/${s.path}/teams/${TEAM_ID}/schedule?seasontype=${t}`;
+    reqs.push(fetch(url).then((r) => (r.ok ? r.json() : null)).then((j) => ({ s, j })).catch(() => ({ s, j: null })));
+  }
+  const res = await Promise.all(reqs);
+  const seen = new Set(); const out = [];
+  let anyOk = false;
+  for (const { s, j } of res) {
+    if (!j) continue; anyOk = true;
+    for (const ev of j.events || []) {
+      if (seen.has(ev.id)) continue; seen.add(ev.id);
+      out.push(parseEvent(ev, s));
+    }
+  }
+  if (anyOk) { games = out.sort((a, b) => a.start - b.start); loadedAt = new Date(); loadError = false; }
+  else loadError = true;
+  render();
+}
+
+function churchWindow(now) {
+  const ch = SETTINGS.church;
+  if (!ch.link) return null;
+  const [h, m] = ch.start.split(":").map(Number);
+  const d = new Date(now); d.setHours(h, m, 0, 0);
+  d.setDate(d.getDate() + ((ch.day - d.getDay() + 7) % 7));
+  if (d.getDay() === now.getDay() && now - d > ch.showMinutesAfter * MIN) d.setDate(d.getDate() + 7);
+  const open = now >= d - ch.showMinutesBefore * MIN && now <= +d + ch.showMinutesAfter * MIN;
+  return { start: d, open };
+}
+
+function gameLink(g) {
+  return (g.channel && SETTINGS.huluLinks[g.channel]) || SETTINGS.huluFallback;
+}
+
+function render() {
+  const now = new Date();
+  $("clock").textContent = fmtTime(now);
+  $("date").textContent = now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+
+  const nowEl = $("now"), nextEl = $("next");
+  let nowHtml = "";
+
+  const ch = churchWindow(now);
+  if (ch?.open) {
+    nowHtml += `<a class="big church" href="${esc(SETTINGS.church.link)}">
+      <span class="play">▶ Watch church</span>
+      <span class="detail">${esc(SETTINGS.church.name)} · ${fmtTime(ch.start)}</span>
+      <span class="hint">Tap anywhere on this blue box</span></a>`;
+  }
+
+  // A game is "on" from a little before kickoff until ESPN marks it final (or 5 hours as a safety net).
+  const live = games.filter((g) => g.channel && !g.timeTBD && g.state !== "post"
+    && now >= g.start - SETTINGS.showMinutesBefore * MIN && now - g.start < 5 * 60 * MIN);
+  for (const g of live) {
+    const linked = !!SETTINGS.huluLinks[g.channel];
+    nowHtml += `<a class="big" href="${esc(gameLink(g))}">
+      <span class="play">▶ Watch the Hoosiers</span>
+      <span class="detail">${esc(g.sport.label)} ${g.home ? "vs." : "at"} ${esc(g.opp)} · on ${esc(g.channel)}</span>
+      <span class="hint">${linked ? "Tap anywhere on this red box" : `Tap here, then choose ${esc(g.channel)} in Hulu`}</span></a>`;
+  }
+  nowEl.innerHTML = nowHtml;
+
+  // Coming up: the next few games, Hulu ones first-class, others noted plainly.
+  const upcoming = games.filter((g) => g.state !== "post" && g.start > now && !live.includes(g)).slice(0, 4);
+  let nextHtml = "";
+  if (loadError && !games.length) {
+    nextHtml = `<div class="card"><div class="label">Indiana Hoosiers</div>
+      <div class="what">The game schedule didn't load. Check that the iPad is on Wi‑Fi.</div>
+      <div class="note">This screen tries again by itself every few minutes.</div></div>`;
+  } else if (upcoming.length) {
+    const [n, ...rest] = upcoming;
+    const where = n.channel ? `on ${esc(n.channel)}` : n.nets.length ? `on ${esc(n.nets.join(", "))} (not on Hulu)` : "channel not announced yet";
+    nextHtml = `<div class="card"><div class="label">Next Hoosiers game</div>
+      <div class="when">${fmtDay(n.start)}${n.timeTBD ? ", time to be announced" : ` at ${fmtTime(n.start)}`}</div>
+      <div class="what">${esc(n.sport.label)} ${n.home ? "vs." : "at"} ${esc(n.opp)}</div>
+      <div class="note">${where}. A big red button will appear here when it's time.</div></div>`;
+    if (rest.length) {
+      nextHtml += `<div class="later small">${rest.map((g) => `<div><b>${fmtDay(g.start)}${g.timeTBD ? "" : " " + fmtTime(g.start)}</b><span>${esc(g.sport.label)} ${g.home ? "vs." : "at"} ${esc(g.opp)}${g.channel ? " · " + esc(g.channel) : g.nets.length ? " · " + esc(g.nets.join(", ")) + " (not on Hulu)" : ""}</span></div>`).join("")}</div>`;
+    }
+  } else if (games.length) {
+    nextHtml = `<div class="card"><div class="label">Indiana Hoosiers</div><div class="what">No more games on the schedule right now.</div></div>`;
+  }
+  if (ch && !ch.open) {
+    nextHtml += `<div class="card"><div class="label" style="color:var(--church)">Church</div>
+      <div class="what">${fmtDay(ch.start)} at ${fmtTime(ch.start)}</div>
+      <div class="note">A big blue button will appear here when it starts.</div></div>`;
+  }
+  nextEl.innerHTML = nextHtml;
+
+  $("status").textContent = loadedAt ? `Schedule updated ${fmtTime(loadedAt)}.` : "";
+}
+
+// Keep the screen awake while this page is showing (works on recent iPads; harmless if not).
+async function stayAwake() { try { await navigator.wakeLock?.request("screen"); } catch (e) {} }
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") { stayAwake(); loadSchedule(); }
+});
+
+render();
+loadSchedule();
+stayAwake();
+setInterval(render, 20 * 1000);
+setInterval(loadSchedule, 10 * MIN);
+</script>
+</body>
+</html>
