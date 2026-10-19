@@ -133,10 +133,15 @@ Use this if she isn't always in front of the iPad when the button appears.
 2. **Volume:** if she has Bluetooth hearing aids, pair them under Settings →
    Accessibility → Hearing Devices. Otherwise, a small Bluetooth speaker near her
    chair helps.
-3. **Messages and FaceTime:** add contacts for you, her kids and her sister,
-   each with a clear photo. In Messages, pin those conversations so they stay at
-   the top. Show her the microphone button on the keyboard, so she can talk
-   instead of type.
+3. **Messages:** texting happens in the iPad's own Messages app, not on the
+   dashboard.
+   - Add contacts for you, her kids and her sister, each with a clear photo.
+   - In Messages, press and hold each of their conversations → **Pin**. Pinned
+     conversations sit at the top as large photos she can tap.
+   - Drag **Messages** into the Dock next to the dashboard.
+   - Show her the microphone button on the keyboard, so she can talk instead of
+     type.
+   - Settings → Messages → turn on **iMessage**, signed in with her Apple ID.
 
 ---
 
