@@ -46,6 +46,15 @@ const SETTINGS = {
     showMinutesAfter: 120,
   },
 
+  // "Watch sports" buttons, always on screen. Each opens that channel live in
+  // Hulu, using the links above. Keep this short so the choice stays easy.
+  sportsChannels: [
+    { channel: "BTN",  name: "Big Ten" },
+    { channel: "ESPN", name: "ESPN" },
+    { channel: "FS1",  name: "FS1" },
+    { channel: "FOX",  name: "FOX" },
+  ],
+
   // Opens the iPad's Messages app, where family conversations are pinned at the top.
   // Leave "" to hide the button.
   messagesLink: "messages://",
@@ -104,6 +113,19 @@ header { display: flex; justify-content: space-between; align-items: baseline; g
 .big .hint { font-size: .95em; opacity: .9; }
 .big.church { background: var(--church); box-shadow: 0 10px 0 #12324f; min-height: 30vh; }
 .big.past { min-height: 0; padding: 24px 32px; }
+.sports { display: flex; flex-direction: column; gap: 14px; }
+.sports h2 { margin: 0; font-size: 1em; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 520px) { .tiles { grid-template-columns: 1fr; } }
+.tile {
+  display: flex; flex-direction: column; justify-content: center; gap: 4px; min-height: 120px;
+  padding: 20px 26px; border-radius: 22px; text-decoration: none; color: var(--ink);
+  background: var(--paper); border: 4px solid var(--ink); box-shadow: 0 8px 0 var(--ink);
+}
+.tile:active { transform: translateY(5px); box-shadow: 0 3px 0 var(--ink); }
+.tile:focus-visible { outline: 6px solid var(--crimson); outline-offset: 6px; }
+.tile b { font-size: 1.35em; }
+.tile span { color: var(--muted); font-size: .85em; }
 .big.family { background: var(--family); box-shadow: 0 10px 0 #124526; min-height: 0; padding: 28px 32px; }
 
 .card { border: 3px solid var(--line); border-radius: 24px; padding: 28px 32px; display: flex; flex-direction: column; gap: 6px; }
@@ -129,6 +151,10 @@ header { display: flex; justify-content: space-between; align-items: baseline; g
     <span class="detail"><b>✉ Message family</b></span>
     <span class="hint">Opens Messages. Tap the person you want to write to.</span>
   </a>
+  <section class="sports" id="sports" hidden>
+    <h2>Watch sports now</h2>
+    <div class="tiles" id="tiles"></div>
+  </section>
   <section class="stack" id="next">
     <div class="card"><div class="label">Indiana Hoosiers</div><div class="what">Loading the game schedule…</div></div>
   </section>
@@ -290,6 +316,12 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") { stayAwake(); loadSchedule(); }
 });
 
+const tiles = SETTINGS.sportsChannels.filter((c) => SETTINGS.huluLinks[c.channel]);
+if (tiles.length) {
+  $("tiles").innerHTML = tiles.map((c) => `<a class="tile" href="${esc(SETTINGS.huluLinks[c.channel])}">
+    <b>▶ ${esc(c.name)}</b><span>Whatever is on now</span></a>`).join("");
+  $("sports").hidden = false;
+}
 if (SETTINGS.messagesLink) { $("family").href = SETTINGS.messagesLink; $("family").hidden = false; }
 render();
 loadSchedule();

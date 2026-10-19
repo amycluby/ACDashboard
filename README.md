@@ -12,6 +12,9 @@ at the right time, one big button appears, and she taps it.
   appears from 8:00 to about 10:15 AM (8:15 service) and from 10:40 AM to
   1:00 PM (11:00 service). The rest of the week, a **Watch last Sunday's
   service** button opens the recordings.
+- **Sports anytime:** four big tiles (Big Ten, ESPN, FS1, FOX) are always on
+  screen. Each opens that channel live in Hulu, whatever is on. Change them in
+  `sportsChannels`.
 - **Family:** a green **✉ Message family** button is always on screen. It
   opens the iPad's Messages app, where her family's conversations are pinned at
   the top. No phone numbers are stored in the dashboard.
@@ -34,6 +37,7 @@ pushed to `main` go live automatically through Vercel.
 | `church.link` | Live stream: `https://www.youtube.com/@LlumcOrg/live` |
 | `church.recordings` | Past services: `https://www.youtube.com/@LlumcOrg/streams` |
 | `church.starts` | Service times, 24-hour clock: `08:15`, `11:00` |
+| `sportsChannels` | The always-on "Watch sports now" tiles. Each uses that channel's link from `huluLinks`. Keep it to about four. |
 | `messagesLink` | `messages://` opens the Messages app. If that doesn't work on her iPad, use `sms:` (opens a new message instead). `""` hides the button. |
 | `showMinutesBefore` | How early a button appears (20 minutes). |
 
