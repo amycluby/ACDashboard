@@ -38,8 +38,10 @@ const SETTINGS = {
     name: "Lovers Lane United Methodist Church",
     // "/live" always goes to whatever the church is streaming right now.
     link: "https://www.youtube.com/@LlumcOrg/live",
+    // Past services, for when she misses one or wants to hear it again.
+    recordings: "https://www.youtube.com/@LlumcOrg/streams",
     day: 0,                   // 0 = Sunday
-    start: "11:00",             // 24-hour clock, iPad's own time zone
+    starts: ["08:15", "11:00"], // Traditional services, 24-hour clock, iPad's own time zone
     showMinutesBefore: 20,
     showMinutesAfter: 120,
   },
@@ -96,6 +98,7 @@ header { display: flex; justify-content: space-between; align-items: baseline; g
 .big .detail { font-size: 1.2em; }
 .big .hint { font-size: .95em; opacity: .9; }
 .big.church { background: var(--church); box-shadow: 0 10px 0 #12324f; min-height: 30vh; }
+.big.past { min-height: 0; padding: 24px 32px; }
 
 .card { border: 3px solid var(--line); border-radius: 24px; padding: 28px 32px; display: flex; flex-direction: column; gap: 6px; }
 .card .label { text-transform: uppercase; letter-spacing: .08em; font-size: .8em; color: var(--crimson); font-weight: 700; }
@@ -191,12 +194,17 @@ async function loadSchedule() {
 function churchWindow(now) {
   const ch = SETTINGS.church;
   if (!ch.link) return null;
-  const [h, m] = ch.start.split(":").map(Number);
-  const d = new Date(now); d.setHours(h, m, 0, 0);
-  d.setDate(d.getDate() + ((ch.day - d.getDay() + 7) % 7));
-  if (d.getDay() === now.getDay() && now - d > ch.showMinutesAfter * MIN) d.setDate(d.getDate() + 7);
-  const open = now >= d - ch.showMinutesBefore * MIN && now <= +d + ch.showMinutesAfter * MIN;
-  return { start: d, open };
+  // The service that's on now, or else the next one.
+  let best = null;
+  for (const t of ch.starts) {
+    const [h, m] = t.split(":").map(Number);
+    const d = new Date(now); d.setHours(h, m, 0, 0);
+    d.setDate(d.getDate() + ((ch.day - d.getDay() + 7) % 7));
+    if (now - d > ch.showMinutesAfter * MIN) d.setDate(d.getDate() + 7);
+    const open = now >= d - ch.showMinutesBefore * MIN && now <= +d + ch.showMinutesAfter * MIN;
+    if (!best || (open && !best.open) || (open === best.open && d < best.start)) best = { start: d, open };
+  }
+  return best;
 }
 
 function gameLink(g) {
@@ -255,6 +263,11 @@ function render() {
     nextHtml += `<div class="card"><div class="label" style="color:var(--church)">Church</div>
       <div class="what">${fmtDay(ch.start)} at ${fmtTime(ch.start)}</div>
       <div class="note">A big blue button will appear here when it starts.</div></div>`;
+    if (SETTINGS.church.recordings) {
+      nextHtml += `<a class="big church past" href="${esc(SETTINGS.church.recordings)}">
+        <span class="detail"><b>▶ Watch last Sunday's service</b></span>
+        <span class="hint">Tap the newest service at the top of the list</span></a>`;
+    }
   }
   nextEl.innerHTML = nextHtml;
 
