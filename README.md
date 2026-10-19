@@ -12,6 +12,9 @@ at the right time, one big button appears, and she taps it.
   appears from 8:00 to about 10:15 AM (8:15 service) and from 10:40 AM to
   1:00 PM (11:00 service). The rest of the week, a **Watch last Sunday's
   service** button opens the recordings.
+- **Family:** a green **✉ Message family** button is always on screen. It
+  opens the iPad's Messages app, where her family's conversations are pinned at
+  the top. No phone numbers are stored in the dashboard.
 - **Between games:** the screen shows the next game, its time and channel, and
   the next service.
 
@@ -31,6 +34,7 @@ pushed to `main` go live automatically through Vercel.
 | `church.link` | Live stream: `https://www.youtube.com/@LlumcOrg/live` |
 | `church.recordings` | Past services: `https://www.youtube.com/@LlumcOrg/streams` |
 | `church.starts` | Service times, 24-hour clock: `08:15`, `11:00` |
+| `messagesLink` | `messages://` opens the Messages app. If that doesn't work on her iPad, use `sms:` (opens a new message instead). `""` hides the button. |
 | `showMinutesBefore` | How early a button appears (20 minutes). |
 
 ### Getting the Hulu channel links
@@ -106,10 +110,10 @@ button that takes her Home with one tap.
 
 ### E. Bring the dashboard back automatically
 
-When she leaves YouTube or Hulu, the dashboard opens by itself.
+When she leaves YouTube, Hulu or Messages, the dashboard opens by itself.
 
 1. Open the **Shortcuts** app → **Automation** → **+** (New Automation).
-2. Choose **App**. Select **YouTube** and **Hulu**, select **Is Closed**, and
+2. Choose **App**. Select **YouTube**, **Hulu** and **Messages**, select **Is Closed**, and
    untick **Is Opened**.
 3. Choose **Run Immediately**, and turn off **Notify When Run**.
 4. Tap **New Blank Automation** → add the action **Open URLs** → enter the
@@ -149,6 +153,7 @@ Use this if she isn't always in front of the iPad when the button appears.
 
 - [ ] The dashboard opens from the Dock icon and shows the next IU game.
 - [ ] Each Hulu link opens the Hulu app on the right channel.
+- [ ] **Message family** opens Messages with her family pinned at the top.
 - [ ] **Watch last Sunday's service** opens YouTube; tapping the AssistiveTouch
       button brings the dashboard back.
 - [ ] The iPad is plugged in, on Wi‑Fi, and the screen doesn't lock.
