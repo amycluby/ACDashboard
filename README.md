@@ -23,6 +23,21 @@ at the right time, one big button appears, and she taps it.
 
 Times follow the iPad's clock (Central time for her).
 
+### Designed for her
+
+- **Large type** in Atkinson Hyperlegible, a typeface made for low vision.
+  Text is at least 26px; buttons are at least 120px tall with wide gaps between
+  them, so a shaky tap doesn't hit the wrong one.
+- **High contrast:** all text is 7:1 or better (WCAG AAA). Each job has its own
+  color: red for IU, blue for church, green for family, black for sports.
+- **Buttons over reading:** the screen shows one card of information (the next
+  IU game) and otherwise only buttons. Everything fits on one iPad screen with
+  no scrolling.
+- **Forgiving taps:** pressing and holding a button doesn't open a menu, and
+  double taps don't zoom the page.
+- **Plain words:** days are written out ("Tomorrow, Tuesday"), and messages
+  appear only when something needs attention.
+
 ---
 
 ## Part 1: Settings (whoever manages the page)

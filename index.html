@@ -78,10 +78,10 @@ const TEAM_ID = 84;
   --crimson-dark: #6e0000;
   --paper: #ffffff;
   --ink: #1a1414;
-  --muted: #5b4f4f;
+  --muted: #3d3333;   /* 12:1 on white */
   --line: #e7dcdc;
   --church: #1f4e79;
-  --family: #1d6b3a;
+  --family: #17572f;  /* white text 8.5:1 */
   --font: "Atkinson Hyperlegible", -apple-system, "Helvetica Neue", Arial, sans-serif;
   color-scheme: light;
 }
@@ -89,33 +89,35 @@ const TEAM_ID = 84;
 html, body { height: 100%; }
 body {
   margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font);
-  font-size: clamp(22px, 2.6vw, 30px); line-height: 1.35;
+  font-size: clamp(26px, 3vw, 34px); line-height: 1.4;
   padding-left: max(24px, env(safe-area-inset-left, 0px));
   padding-right: max(24px, env(safe-area-inset-right, 0px));
   padding-block: max(20px, env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-bottom, 0px));
   -webkit-text-size-adjust: 100%;
 }
-main { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; min-height: 100%; }
+main { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; min-height: 100%; }
 header { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 4px solid var(--crimson); padding-bottom: 12px; }
 .clock { font-size: 1.6em; font-weight: 700; font-variant-numeric: tabular-nums; }
-.date { color: var(--muted); }
-.stack { display: flex; flex-direction: column; gap: 24px; }
+.date { font-size: 1.25em; font-weight: 700; }
+a { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.stack { display: flex; flex-direction: column; gap: 32px; }
+.stack:empty { display: none; }
 
 .big {
   display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: #fff;
-  background: var(--crimson); border-radius: 28px; padding: 40px 36px; min-height: 42vh; justify-content: center;
+  background: var(--crimson); border-radius: 28px; padding: 36px; min-height: 30vh; justify-content: center;
   box-shadow: 0 10px 0 var(--crimson-dark); transition: transform .08s;
 }
 .big:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--crimson-dark); }
 .big:focus-visible { outline: 6px solid var(--ink); outline-offset: 6px; }
 .big .play { font-size: 2.6em; font-weight: 700; line-height: 1.05; text-wrap: balance; }
 .big .detail { font-size: 1.2em; }
-.big .hint { font-size: .95em; opacity: .9; }
-.big.church { background: var(--church); box-shadow: 0 10px 0 #12324f; min-height: 30vh; }
+.big .hint { font-size: 1em; }
+.big.church { background: var(--church); box-shadow: 0 10px 0 #12324f; }
 .big.past { min-height: 0; padding: 24px 32px; }
-.sports { display: flex; flex-direction: column; gap: 14px; }
-.sports h2 { margin: 0; font-size: 1em; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
-.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.sports { display: flex; flex-direction: column; gap: 20px; }
+.sports h2 { margin: 0; font-size: 1.2em; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
 @media (max-width: 520px) { .tiles { grid-template-columns: 1fr; } }
 .tile {
   display: flex; flex-direction: column; justify-content: center; gap: 4px; min-height: 120px;
@@ -124,16 +126,16 @@ header { display: flex; justify-content: space-between; align-items: baseline; g
 }
 .tile:active { transform: translateY(5px); box-shadow: 0 3px 0 var(--ink); }
 .tile:focus-visible { outline: 6px solid var(--crimson); outline-offset: 6px; }
-.tile b { font-size: 1.35em; }
-.tile span { color: var(--muted); font-size: .85em; }
-.big.family { background: var(--family); box-shadow: 0 10px 0 #124526; min-height: 0; padding: 28px 32px; }
+.tile b { font-size: 1.5em; }
+.tile > span { color: var(--muted); font-size: 1em; }
+.big.family { background: var(--family); box-shadow: 0 10px 0 #0e3a1e; min-height: 0; padding: 28px 32px; }
 
 .card { border: 3px solid var(--line); border-radius: 24px; padding: 28px 32px; display: flex; flex-direction: column; gap: 6px; }
-.card .label { text-transform: uppercase; letter-spacing: .08em; font-size: .8em; color: var(--crimson); font-weight: 700; }
+.card .label { font-size: 1em; color: var(--crimson); font-weight: 700; }
 .card .when { font-size: 1.5em; font-weight: 700; }
 .card .what { font-size: 1.2em; }
 .card .note { color: var(--muted); }
-.small { color: var(--muted); font-size: .75em; }
+.small { color: var(--muted); font-size: .9em; }
 @media (prefers-reduced-motion: reduce) { .big { transition: none; } }
 </style>
 </head>
@@ -148,8 +150,8 @@ header { display: flex; justify-content: space-between; align-items: baseline; g
     <div class="card"><div class="label">Indiana Hoosiers</div><div class="what">Loading the game schedule…</div></div>
   </section>
   <a class="big family" id="family" href="" hidden>
-    <span class="detail"><b>✉ Message family</b></span>
-    <span class="hint">Opens Messages. Tap the person you want to write to.</span>
+    <span class="detail"><b><span aria-hidden="true">✉</span> Message family</b></span>
+    <span class="hint">Tap the person you want to write to</span>
   </a>
   <section class="sports" id="sports" hidden>
     <h2>Watch sports now</h2>
@@ -172,7 +174,7 @@ const fmtDay = (d) => {
   const that = new Date(d); that.setHours(0, 0, 0, 0);
   const diff = Math.round((that - today) / (24 * 60 * MIN));
   if (diff === 0) return "Today";
-  if (diff === 1) return "Tomorrow";
+  if (diff === 1) return "Tomorrow, " + d.toLocaleDateString([], { weekday: "long" });
   return d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
 };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -256,7 +258,7 @@ function render() {
   const ch = churchWindow(now);
   if (ch?.open) {
     nowHtml += `<a class="big church" href="${esc(SETTINGS.church.link)}">
-      <span class="play">▶ Watch church</span>
+      <span class="play"><span aria-hidden="true">▶</span> Watch church</span>
       <span class="detail">${esc(SETTINGS.church.name)} · ${fmtTime(ch.start)}</span>
       <span class="hint">Tap anywhere on this blue box</span></a>`;
   }
@@ -267,7 +269,7 @@ function render() {
   for (const g of live) {
     const linked = !!SETTINGS.huluLinks[g.channel];
     nowHtml += `<a class="big" href="${esc(gameLink(g))}">
-      <span class="play">▶ Watch the Hoosiers</span>
+      <span class="play"><span aria-hidden="true">▶</span> Watch the Hoosiers</span>
       <span class="detail">${esc(g.sport.label)} ${g.home ? "vs." : "at"} ${esc(g.opp)} · on ${esc(g.channel)}</span>
       <span class="hint">${linked ? "Tap anywhere on this red box" : `Tap here, then choose ${esc(g.channel)} in Hulu`}</span></a>`;
   }
@@ -284,7 +286,7 @@ function render() {
     // A game is on: the red button says it all, so skip the "next game" card.
   } else if (upcoming.length) {
     const n = upcoming[0];
-    const where = n.channel ? `on ${esc(n.channel)}` : n.nets.length ? `on ${esc(n.nets.join(", "))} (not on Hulu)` : "channel not announced yet";
+    const where = n.channel ? `On ${esc(n.channel)}` : n.nets.length ? `On ${esc(n.nets.join(", "))} (not on Hulu)` : "Channel not announced yet";
     nextHtml = `<div class="card"><div class="label">Next Hoosiers game</div>
       <div class="when">${fmtDay(n.start)}${n.timeTBD ? ", time to be announced" : ` at ${fmtTime(n.start)}`}</div>
       <div class="what">${esc(n.sport.label)} ${n.home ? "vs." : "at"} ${esc(n.opp)}</div>
@@ -294,20 +296,18 @@ function render() {
   }
   nextEl.innerHTML = nextHtml;
 
+  // Between services: one blue button for the recordings, with the next service time on it.
   let churchHtml = "";
-  if (ch && !ch.open) {
-    churchHtml += `<div class="card"><div class="label" style="color:var(--church)">Church</div>
-      <div class="what">${fmtDay(ch.start)} at ${fmtTime(ch.start)}</div>
-      <div class="note">A big blue button will appear at the top when it starts.</div></div>`;
-    if (SETTINGS.church.recordings) {
-      churchHtml += `<a class="big church past" href="${esc(SETTINGS.church.recordings)}">
-        <span class="detail"><b>▶ Watch last Sunday's service</b></span>
-        <span class="hint">Tap the newest service at the top of the list</span></a>`;
-    }
+  if (ch && !ch.open && SETTINGS.church.recordings) {
+    churchHtml = `<a class="big church past" href="${esc(SETTINGS.church.recordings)}">
+      <span class="detail"><b><span aria-hidden="true">▶</span> Watch last Sunday's service</b></span>
+      <span class="hint">Next service: ${fmtDay(ch.start)} at ${fmtTime(ch.start)}</span></a>`;
   }
   $("church").innerHTML = churchHtml;
 
-  $("status").textContent = loadedAt ? `Schedule updated ${fmtTime(loadedAt)}.` : "";
+  // Only speak up when the schedule is stale; otherwise keep the screen quiet.
+  const stale = loadError && loadedAt;
+  $("status").textContent = stale ? `Schedule last updated ${fmtTime(loadedAt)}. Check the Wi‑Fi.` : "";
 }
 
 // Keep the screen awake while this page is showing (works on recent iPads; harmless if not).
@@ -319,7 +319,7 @@ document.addEventListener("visibilitychange", () => {
 const tiles = SETTINGS.sportsChannels.filter((c) => SETTINGS.huluLinks[c.channel]);
 if (tiles.length) {
   $("tiles").innerHTML = tiles.map((c) => `<a class="tile" href="${esc(SETTINGS.huluLinks[c.channel])}">
-    <b>▶ ${esc(c.name)}</b><span>Whatever is on now</span></a>`).join("");
+    <b><span aria-hidden="true">▶</span> ${esc(c.name)}</b></a>`).join("");
   $("sports").hidden = false;
 }
 if (SETTINGS.messagesLink) { $("family").href = SETTINGS.messagesLink; $("family").hidden = false; }
