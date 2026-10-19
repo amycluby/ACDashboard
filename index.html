@@ -134,9 +134,6 @@ header { display: flex; justify-content: space-between; align-items: baseline; g
 .card .what { font-size: 1.2em; }
 .card .note { color: var(--muted); }
 .small { color: var(--muted); font-size: .75em; }
-.later { display: flex; flex-direction: column; gap: 4px; }
-.later div { display: flex; gap: 16px; flex-wrap: wrap; }
-.later b { min-width: 9em; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .big { transition: none; } }
 </style>
 </head>
@@ -277,22 +274,21 @@ function render() {
   nowEl.innerHTML = nowHtml;
 
   // Coming up: the next few games, Hulu ones first-class, others noted plainly.
-  const upcoming = games.filter((g) => g.state !== "post" && g.start > now && !live.includes(g)).slice(0, 4);
+  const upcoming = games.filter((g) => g.state !== "post" && g.start > now && !live.includes(g)).slice(0, 1);
   let nextHtml = "";
   if (loadError && !games.length) {
     nextHtml = `<div class="card"><div class="label">Indiana Hoosiers</div>
       <div class="what">The game schedule didn't load. Check that the iPad is on Wi‑Fi.</div>
       <div class="note">This screen tries again by itself every few minutes.</div></div>`;
+  } else if (live.length) {
+    // A game is on: the red button says it all, so skip the "next game" card.
   } else if (upcoming.length) {
-    const [n, ...rest] = upcoming;
+    const n = upcoming[0];
     const where = n.channel ? `on ${esc(n.channel)}` : n.nets.length ? `on ${esc(n.nets.join(", "))} (not on Hulu)` : "channel not announced yet";
     nextHtml = `<div class="card"><div class="label">Next Hoosiers game</div>
       <div class="when">${fmtDay(n.start)}${n.timeTBD ? ", time to be announced" : ` at ${fmtTime(n.start)}`}</div>
       <div class="what">${esc(n.sport.label)} ${n.home ? "vs." : "at"} ${esc(n.opp)}</div>
       <div class="note">${where}. A big red button will appear here when it's time.</div></div>`;
-    if (rest.length) {
-      nextHtml += `<div class="later small">${rest.map((g) => `<div><b>${fmtDay(g.start)}${g.timeTBD ? "" : " " + fmtTime(g.start)}</b><span>${esc(g.sport.label)} ${g.home ? "vs." : "at"} ${esc(g.opp)}${g.channel ? " · " + esc(g.channel) : g.nets.length ? " · " + esc(g.nets.join(", ")) + " (not on Hulu)" : ""}</span></div>`).join("")}</div>`;
-    }
   } else if (games.length) {
     nextHtml = `<div class="card"><div class="label">Indiana Hoosiers</div><div class="what">No more games on the schedule right now.</div></div>`;
   }
