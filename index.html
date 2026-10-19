@@ -147,6 +147,9 @@ header { display: flex; justify-content: space-between; align-items: baseline; g
     <div class="date" id="date"></div>
   </header>
   <section class="stack" id="now"></section>
+  <section class="stack" id="next">
+    <div class="card"><div class="label">Indiana Hoosiers</div><div class="what">Loading the game schedule…</div></div>
+  </section>
   <a class="big family" id="family" href="" hidden>
     <span class="detail"><b>✉ Message family</b></span>
     <span class="hint">Opens Messages. Tap the person you want to write to.</span>
@@ -155,9 +158,7 @@ header { display: flex; justify-content: space-between; align-items: baseline; g
     <h2>Watch sports now</h2>
     <div class="tiles" id="tiles"></div>
   </section>
-  <section class="stack" id="next">
-    <div class="card"><div class="label">Indiana Hoosiers</div><div class="what">Loading the game schedule…</div></div>
-  </section>
+  <section class="stack" id="church"></section>
   <p class="small" id="status"></p>
 </main>
 
@@ -295,17 +296,20 @@ function render() {
   } else if (games.length) {
     nextHtml = `<div class="card"><div class="label">Indiana Hoosiers</div><div class="what">No more games on the schedule right now.</div></div>`;
   }
+  nextEl.innerHTML = nextHtml;
+
+  let churchHtml = "";
   if (ch && !ch.open) {
-    nextHtml += `<div class="card"><div class="label" style="color:var(--church)">Church</div>
+    churchHtml += `<div class="card"><div class="label" style="color:var(--church)">Church</div>
       <div class="what">${fmtDay(ch.start)} at ${fmtTime(ch.start)}</div>
-      <div class="note">A big blue button will appear here when it starts.</div></div>`;
+      <div class="note">A big blue button will appear at the top when it starts.</div></div>`;
     if (SETTINGS.church.recordings) {
-      nextHtml += `<a class="big church past" href="${esc(SETTINGS.church.recordings)}">
+      churchHtml += `<a class="big church past" href="${esc(SETTINGS.church.recordings)}">
         <span class="detail"><b>▶ Watch last Sunday's service</b></span>
         <span class="hint">Tap the newest service at the top of the list</span></a>`;
     }
   }
-  nextEl.innerHTML = nextHtml;
+  $("church").innerHTML = churchHtml;
 
   $("status").textContent = loadedAt ? `Schedule updated ${fmtTime(loadedAt)}.` : "";
 }
