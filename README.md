@@ -35,16 +35,16 @@ pushed to `main` go live automatically through Vercel.
 
 ### Getting the Hulu channel links
 
-Do this once for each channel. BTN, FOX, NBC, CBS, ESPN and FS1 cover most IU
-games.
+All 13 channels are filled in. To replace one if it ever stops working:
 
 1. On a computer, go to hulu.com and sign in with her account.
-2. Open the channel's network page (search for the channel, or browse the hubs).
+2. Open **Live** and start the channel playing. For FOX, NBC, CBS and ABC,
+   pick her local station (the one with local call letters).
 3. Copy the address from the address bar. It looks like
-   `https://www.hulu.com/network/...`.
+   `https://www.hulu.com/watch/...`.
 4. Paste it into `huluLinks` next to the channel's name.
 5. **Test it on her iPad:** open the link in Safari. The Hulu app should open on
-   that channel.
+   that channel, live.
 
 Games on Peacock, BTN+ or ESPN+ aren't on Hulu. The page lists them as
 "not on Hulu" and doesn't show a button for them.
